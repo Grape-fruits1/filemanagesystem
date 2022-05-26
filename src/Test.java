@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 /**
  * @author 17291
  * @version 1.0
@@ -11,5 +13,21 @@ public class Test {
         System.out.println("114514");
         System.out.println("114514");
         System.out.println(1);
+        Scanner scan = new Scanner(System.in);
+        String a = scan.next();
+        System.out.println(a.getBytes()[0]);
+//        for (int i = 0; i < 10; i++) {
+//            System.out.print(a);
+//            if ("1".equals(a)) {
+//                System.out.println();
+//            }
+//        }
+//        while (true) {
+//            if ("1".equals(scan.next())) {
+//                System.out.println("successfull!");
+//                break;
+//            }
+//        }
+        System.out.println("");
     }
 }
