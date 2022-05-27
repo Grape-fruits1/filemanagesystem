@@ -34,5 +34,7 @@ public class Test {
 //            }
 //        }
         System.out.println("");
+//        Manage manage = new Manage();
+//        manage.printBM();
     }
 }
