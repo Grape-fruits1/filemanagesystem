@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+import java.util.Arrays;
+
 /**
  * @author 17291
  * @version 1.0
@@ -9,13 +11,16 @@ import java.util.Scanner;
  */
 public class Test {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
-        System.out.println("114514");
-        System.out.println("114514");
-        System.out.println(1);
+        byte []a = new byte[10];
+        a[0] = "asd*#7".getBytes()[1];
+        System.out.println((char)a[0]);
+//        System.out.println("Hello World!");
+//        System.out.println("114514");
+//        System.out.println("114514");
+//        System.out.println(1);
         Scanner scan = new Scanner(System.in);
-        String a = scan.next();
-        System.out.println(a.getBytes()[0]);
+        String b = scan.next();
+        System.out.println(b.getBytes()[0]);
 //        for (int i = 0; i < 10; i++) {
 //            System.out.print(a);
 //            if ("1".equals(a)) {
