@@ -34,7 +34,7 @@ public class Test {
 //            }
 //        }
         System.out.println("");
-//        Manage manage = new Manage();
-//        manage.printBM();
+        FileAllocation file = new FileAllocation();
+        file.LogicBlock();
     }
 }
