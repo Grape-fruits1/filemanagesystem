@@ -1,7 +1,4 @@
-import java.util.Collections;
-import java.util.Random;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * @program: filemanagesystem
@@ -13,9 +10,13 @@ import java.util.Iterator;
 public class FileAllocation {
     int row = 4, column = 8;       //行列数
     int[][] bitmap;                //位示图
-    // arraylist_1为逻辑块数组、arraylist_2为物理块数组（二维）
+    // arraylist_1为逻辑块数组、arraylist_2为物理块字节数组（二维）
     ArrayList<Integer> arraylist_1 = new ArrayList<Integer>(Collections.nCopies(10, 0));
-    ArrayList<Integer> arraylist_2 = new ArrayList<Integer>();
+    ArrayList<ArrayList<Byte>> arraylist_2 = new ArrayList<ArrayList<Byte>>();
+    // 以下数组为arraylist_2的构成数组
+    ArrayList<Byte> arraylist_2_1 = new ArrayList<Byte>();
+    ArrayList<Byte> arraylist_2_2 = new ArrayList<Byte>();
+    ArrayList<Byte> arraylist_2_3 = new ArrayList<Byte>();
 
     /**
      * 记录逻辑块
@@ -33,11 +34,33 @@ public class FileAllocation {
                 num++;
             }
         }
-        // 输出逻辑块数组 arraylist_1
+        // 输出当前逻辑块数组 arraylist_1
         for (Integer integer : arraylist_1)
             System.out.print(integer + " ");
     }
 
+    /**
+     * 记录物理块
+     */
+    public void RealBlock() {
+        byte a = 0;
+        byte b = 1;
+        arraylist_2.add(arraylist_2_1);
+        arraylist_2.add(arraylist_2_2);
+        arraylist_2.add(arraylist_2_3);
+        // 给所有物理块赋初值0
+        for (int i = 0; i < 16; i++) {
+            arraylist_2_1.add(a);
+            arraylist_2_2.add(a);
+            arraylist_2_3.add(a);
+        }
+        System.out.println("System current Bitmap:");
+        for (int i = 0; i < arraylist_2.size(); i++) {
+            for (int j = 0; j < arraylist_2.get(i).size(); j++)
+                System.out.print(arraylist_2.get(i).get(j) + " ");
+            System.out.println();
+        }
+    }
 //        if (arraylist_1.get(0) == 0) {
 //        for (int i = 0; i < blocksNumber; i++) {
 //            if (arraylist_1.get(i) == 0)

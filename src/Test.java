@@ -33,8 +33,8 @@ public class Test {
 //                break;
 //            }
 //        }
-        System.out.println("");
-        FileAllocation file = new FileAllocation();
-        file.LogicBlock();
+//        System.out.println("");
+//        FileAllocation file = new FileAllocation();
+//        file.RealBlock();
     }
 }
