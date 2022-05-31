@@ -55,4 +55,6 @@ public class VI {
             //从旧文件中还原缓冲区
         }
     }
+
+    public native void createVI(String fileName);
 }
