@@ -103,25 +103,25 @@ class MainFunction {
     }
 
     public void showAllBlocks() {
-        Iterator<InodeBlock> iterator = this.inodeBlocks.iterator();
-        while (iterator.hasNext()) {
-            System.out.println(iterator.next());
+        for (InodeBlock inodeBlock : this.inodeBlocks) {
+            System.out.println(inodeBlock);
         }
 
     }
 
     /**
      * 初始化第number个索引磁盘块
+     *
      * @param number 磁盘块ID
      * @param ib1    需要初始化的磁盘
      */
     public void initBlocks(InodeBlock ib1, int number) {
         ib1.setBlockId(number);
-        Integer i = ib1.getBlockId() * 64;
-        Integer tag = number * 64;
+        int i = ib1.getBlockId() * 64;
+        int tag = number * 64;
         int j = 0;
         for (; i < (64 + tag); i++) {
-            ib1.initBlock(j, i.toString());
+            ib1.initBlock(j, Integer.toString(i));
             j++;
         }
     }
@@ -130,4 +130,5 @@ class MainFunction {
         allBlocks();
         showAllBlocks();
     }
+
 }
