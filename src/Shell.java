@@ -10,9 +10,11 @@ import java.util.Scanner;
 public class Shell {
     /**
      * 操作系统入口
+     *
      * @param args
      */
     public static void main(String[] args) {
+        FileAllocation file1 = new FileAllocation();
         while (true) {
             Scanner scan = new Scanner(System.in);
             String input = scan.nextLine();
@@ -36,7 +38,8 @@ public class Shell {
                     VI vi;
                     if ("".equals(param1)) {
                         vi = new VI();
-                        System.out.println(vi.start());
+                        byte[] a = vi.start();
+                        file1.realBlockAllocate(Transmit.byteToInt(a), a);
                     } else {
                     }
                 }

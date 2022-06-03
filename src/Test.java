@@ -39,7 +39,8 @@ public class Test {
 //        }
 //        System.out.println("");
 //        FileAllocation file = new FileAllocation();
-//        file.RealBlock();
+//        file.realBlockAllocate(5555, new byte[]{125});
+
 
 //        ViNative.vi.start("1");
     }

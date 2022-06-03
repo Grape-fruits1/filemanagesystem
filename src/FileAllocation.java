@@ -10,10 +10,10 @@ import java.util.Collections;
  **/
 
 public class FileAllocation {
-    int size = 2049;
+    int size = Transmit.byteToInt(Shell.a);
     // arraylist_1为逻辑块数组、disc_block为物理块字节数组（二维）
     ArrayList<Integer> arraylist_1 = new ArrayList<Integer>(Collections.nCopies(10, 0));
-    static byte[][] disc_block = new byte[512][20];
+    static byte[][] disc_block = new byte[512][1000000];
 //    // 以下数组为arraylist_2的构成数组
 //    ArrayList<Byte> arraylist_2_1 = new ArrayList<Byte>();
 //    ArrayList<Byte> arraylist_2_2 = new ArrayList<Byte>();
@@ -49,13 +49,21 @@ public class FileAllocation {
     /**
      * 物理块的分配、以及与逻辑块的映射
      */
-    public void realBlockAllocate(int size, byte[] a) {
+    public byte[] realBlockAllocate(int size, byte[] a) {
         for (int i = 0; i < size; i++) {
             disc_block[i][0] = a[i];
         }
-        arraylist_1 = logicBlock();
-        System.out.println("index list:" + arraylist_1);
+        int index = 0;
+        byte[] disc_block_1 = new byte[0];
+//        System.out.println("index list:" + arraylist_1);
+        for (byte[] bytes : disc_block) {
+            for (byte aByte : bytes) {
+                disc_block_1[index++] = aByte;
+            }
+        }
+        return disc_block_1;
     }
+
 
 //    /**
 //     * 记录物理块
