@@ -41,6 +41,6 @@ public class Test {
 //        FileAllocation file = new FileAllocation();
 //        file.RealBlock();
 
-        ViNative.vi.start("1");
+//        ViNative.vi.start("1");
     }
 }

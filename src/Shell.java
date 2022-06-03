@@ -35,11 +35,9 @@ public class Shell {
                 case "vi" -> {
                     VI vi;
                     if ("".equals(param1)) {
-                        vi = new VI();
+                        System.out.println(ViNative.vi.start("1"));
                     } else {
-                        vi = new VI(param1);
                     }
-                    vi.start();
                 }
                 case "exit" -> {
                     return;
