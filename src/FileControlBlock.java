@@ -32,15 +32,223 @@ public class FileControlBlock {
 
     //调试用主函数入口
     public static void main(String[] args) {
-        MainFunction mainFunction = new MainFunction();
-        mainFunction.mainB();
+//        MainFunction mainFunctions = new MainFunction();
+//        mainFunctions.mainB();
+        InodeBlocks i = new InodeBlocks();
+        i.test();
+
+    }
+
+
+}
+
+/**
+ * 整个混合索引所占用的磁盘 20000*192
+ */
+
+class InodeBlocks {
+    //初始化磁盘
+    byte[][] blocks = new byte[20000][256];
+
+    /**
+     * 初始化
+     */
+    public InodeBlocks() {
+        initIndex();
+    }
+
+    /**
+     * int到byte[] 由高位到低位
+     *
+     * @param i 需要转换为byte数组的整行值。
+     * @return byte数组
+     */
+    public static byte[] intToByteArray(int i) {
+        byte[] result = new byte[4];
+        result[0] = (byte) ((i >> 24) & 0xFF);
+        result[1] = (byte) ((i >> 16) & 0xFF);
+        result[2] = (byte) ((i >> 8) & 0xFF);
+        result[3] = (byte) (i & 0xFF);
+        return result;
+    }
+
+    /**
+     * byte[]转int
+     *
+     * @param bytes 需要转换成int的数组
+     * @return int值
+     */
+    public static int byteArrayToInt(byte[] bytes) {
+        int value = 0;
+        for (int i = 0; i < 4; i++) {
+            int shift = (3 - i) * 8;
+            value += (bytes[i] & 0xFF) << shift;
+        }
+        return value;
+    }
+
+
+    /**
+     * 初始化索引
+     */
+    public void initIndex() {
+        int i = 0;
+        int indexValue = 0;
+        byte[] buff;
+        for (; i < 10; i++) {
+            for (int j = 0; j < 256; j += 4) {
+                buff = intToByteArray(indexValue);
+                this.blocks[i][j] = buff[0];
+                this.blocks[i][j + 1] = buff[1];
+                this.blocks[i][j + 2] = buff[2];
+                this.blocks[i][j + 3] = buff[3];
+                indexValue += 1;
+            }
+        }
+        //至此直接索引完成
+
+        //二级索引开始
+        int secondIndex = 65;
+        for (; i < 62; i++) {
+            for (int j = 0; j < 256; j += 4) {
+                buff = intToByteArray(secondIndex);
+                this.blocks[i][j] = buff[0];
+                this.blocks[i][j + 1] = buff[1];
+                this.blocks[i][j + 2] = buff[2];
+                this.blocks[i][j + 3] = buff[3];
+                secondIndex += 1;
+            }
+        }
+
+        System.out.println(secondIndex);
+        // 二级索引的值从第65-3392开始分配
+
+        secondIndex = 640;
+        i = 65;
+        for (; i < 3393; i++) {
+            for (int j = 0; j < 256; j += 4) {
+                buff = intToByteArray(secondIndex);
+                this.blocks[i][j] = buff[0];
+                this.blocks[i][j + 1] = buff[1];
+                this.blocks[i][j + 2] = buff[2];
+                this.blocks[i][j + 3] = buff[3];
+                secondIndex += 1;
+            }
+        }
+        System.out.println(secondIndex);
+
+        //二级索引至此完成物理块分配 640-213631
+
+        i = 62;
+        int thirdIndex = 3393;
+        for (; i < 65; i++) {
+            for (int j = 0; j < 256; j += 4) {
+                buff = intToByteArray(thirdIndex);
+                this.blocks[i][j] = buff[0];
+                this.blocks[i][j + 1] = buff[1];
+                this.blocks[i][j + 2] = buff[2];
+                this.blocks[i][j + 3] = buff[3];
+                thirdIndex += 1;
+            }
+        }
+
+        i = 3393;
+        thirdIndex = 3585;
+        for (; i < 3585; i++) {
+            for (int j = 0; j < 256; j += 4) {
+                buff = intToByteArray(thirdIndex);
+                this.blocks[i][j] = buff[0];
+                this.blocks[i][j + 1] = buff[1];
+                this.blocks[i][j + 2] = buff[2];
+                this.blocks[i][j + 3] = buff[3];
+                thirdIndex += 1;
+            }
+        }
+        System.out.println(thirdIndex);
+        //三级索引物理快分配完成
+        i = 3585;
+        thirdIndex = 213632;
+        for (; i < 15873; i++) {
+            for (int j = 0; j < 256; j += 4) {
+                buff = intToByteArray(thirdIndex);
+                this.blocks[i][j] = buff[0];
+                this.blocks[i][j + 1] = buff[1];
+                this.blocks[i][j + 2] = buff[2];
+                this.blocks[i][j + 3] = buff[3];
+                thirdIndex += 1;
+            }
+        }
+        System.out.println(thirdIndex);
+
+    }
+
+    /**
+     * 根据偏移量获得物理地址
+     *
+     * @param index 偏移量
+     */
+    public int queryIndex(int index) {
+        if (index <= 639)
+            return index;
+        else if (index <= 213631) {
+            int i = 1;
+            byte[] buff = new byte[4];
+            for (; i < 53; i++) {
+                if (index < 640 + 4096 * i) {
+                    break;
+                }
+            }
+            //System.out.println(i+9);
+
+            int x = (index - 640) / 64 + 65;
+            int y = (index - 640) % 64;
+
+            y = y * 4;
+            buff[0] = this.blocks[x][y];
+            buff[1] = this.blocks[x][y + 1];
+            buff[2] = this.blocks[x][y + 2];
+            buff[3] = this.blocks[x][y + 3];
+
+//            System.out.println(x);
+//            System.out.println(y);
+//            System.out.println(byteArrayToInt(buff));
+            return byteArrayToInt(buff);
+        } else if (index <= 1000063) {
+            int i = 1;
+            byte[] buff = new byte[4];
+            for (; i < 4; i++) {
+                if (index < 213631 + 262144 * i) {
+                    break;
+                }
+            }
+
+            int x = (index - 213632) / 64 + 3585;
+            int y = (index - 213632) % 64;
+            int z = (x-3585) /64 +3393;
+
+            y = y * 4;
+            buff[0] = this.blocks[x][y];
+            buff[1] = this.blocks[x][y + 1];
+            buff[2] = this.blocks[x][y + 2];
+            buff[3] = this.blocks[x][y + 3];
+            System.out.println(x);
+            System.out.println(y);
+            System.out.println(z);
+            return byteArrayToInt(buff);
+
+        } else {
+            System.out.println("索引越界");
+            return 0;
+        }
+    }
+
+
+    public void test() {
+        System.out.println(queryIndex(213633));
+
     }
 }
 
-class FileMessage {
-    private Date createDate;
-    private String owner;
-}
 
 /**
  * 一个索引块存64个索引指针大小 1536byte
