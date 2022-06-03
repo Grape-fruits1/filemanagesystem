@@ -30,21 +30,9 @@ public class VI {
     /**
      * 初始化VI方法
      */
-    public void start() {
+    public byte[] start() {
         loadBuffer();
-        Scanner scan = new Scanner(System.in);
-        while (true) {
-            String str = scan.next();
-            //进入编辑模式
-            if (MODIFICATION_MODE.equals(str)) {
-
-            }
-            //进入命令模式
-            else if (COMMAND_MODE.equals(str)) {
-
-            }
-        }
-
+        return ViNative.vi.start(fileName).getBytes();
     }
     /**
      * 加载VI文件缓冲区方法
