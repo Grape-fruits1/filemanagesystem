@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -13,8 +14,9 @@ public class Shell {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         FileAllocation file1 = new FileAllocation();
+        Transmit transmit = new Transmit();
         while (true) {
             Scanner scan = new Scanner(System.in);
             String input = scan.nextLine();
@@ -39,7 +41,9 @@ public class Shell {
                     if ("".equals(param1)) {
                         vi = new VI();
                         byte[] a = vi.start();
-                        file1.realBlockAllocate(Transmit.byteToInt(a), a);
+                        // 转化后的一维byte数组
+                        byte[] b = file1.realBlockAllocate(Transmit.byteToInt(a), a);
+                        transmit.outPutDisc(b);
                     } else {
                     }
                 }
