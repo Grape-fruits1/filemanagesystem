@@ -9,10 +9,10 @@ import java.util.Collections;
  **/
 
 public class FileAllocation {
+
     VI vi = new VI();
     byte[] a = vi.start();
     int size = Transmit.byteToInt(a);
-    byte[] disc_block_1 = new byte[0];
     // arraylist_1为逻辑块数组、disc_block为物理块字节数组（二维）
     ArrayList<Integer> arraylist_1 = new ArrayList<Integer>(Collections.nCopies(10, 0));
     static byte[][] disc_block = new byte[512][1000000];
@@ -62,9 +62,12 @@ public class FileAllocation {
      * 物理块的分配、以及与逻辑块的映射
      */
     public byte[] realBlockAllocate(int size, byte[] a) {
-        for (int i = 0; i < size; i++) {
-            disc_block[i][0] = a[i];
-        }
+        byte[] disc_block_1 = new byte[0];
+        for (int i = 0; i < 1000000; i++)
+            if (disc_block[i][0] == 0) {
+                for (int j = 0; j < size; j++)
+                    disc_block[i][0] = a[j];
+            }
         int index = 0;
 //        System.out.println("index list:" + arraylist_1);
         for (byte[] bytes : disc_block) {
@@ -73,6 +76,25 @@ public class FileAllocation {
             }
         }
         return disc_block_1;
+    }
+
+    public int returnIndex(int size, byte[] a) {
+        int nowIndex = 0;
+        byte[] disc_block_1 = new byte[0];
+        for (int i = 0; i < 1000000; i++)
+            if (disc_block[i][0] == 0) {
+                for (int j = 0; j < size; j++)
+                    disc_block[i][0] = a[j];
+                nowIndex = i - size;
+            }
+        int index = 0;
+//        System.out.println("index list:" + arraylist_1);
+        for (byte[] bytes : disc_block) {
+            for (byte aByte : bytes) {
+                disc_block_1[index++] = aByte;
+            }
+        }
+        return nowIndex;
     }
 
 
