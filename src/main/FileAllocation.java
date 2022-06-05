@@ -1,4 +1,4 @@
-package main.java;
+package main;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,26 +21,73 @@ public class FileAllocation {
     byte[] disc_block_2 = new byte[0];
     byte[] disc_block_3 = new byte[0];
     byte[] indexBlock = new byte[512];
+    // 空闲块号数组
+    ArrayList<Integer> freeIndex = new ArrayList<>();
+    // 索引表
+    ArrayList<Integer> indexList = new ArrayList<>();
 //    // 以下数组为arraylist_2的构成数组
 //    ArrayList<Byte> arraylist_2_1 = new ArrayList<Byte>();
 //    ArrayList<Byte> arraylist_2_2 = new ArrayList<Byte>();
 //    ArrayList<Byte> arraylist_2_3 = new ArrayList<Byte>();
 
     /**
+     * 将控制块信息写入磁盘
+     */
+    public void writeControlBlockMessage(int blockId, byte[] a) {
+        for (int i = 0; i < 512; i++)
+            disc_block_1[i + blockId * 512] = a[i];
+    }
+
+    /**
+     * 返回可用空闲块号数组
+     */
+    public ArrayList<Integer> returnFreeIndex() {
+        for (int i = 0; i < 1000000; i++) {
+            if (disc_block_1[i * 512] == 0) {
+                for (int j = 0; j < freeIndex.size(); j++)
+                    freeIndex.set(j, i);
+            }
+        }
+        return freeIndex;
+    }
+
+    /**
+     * 用空闲块号数组来写入指定物理块
+     */
+    public void writeData(byte[] a) {
+        ArrayList<Integer> arrayList = new ArrayList<>();
+        arrayList = this.returnFreeIndex();
+        for (int i = 0; i < arrayList.size(); i++) {
+            int blockNumber = arrayList.get(i) - 1;
+            for (int j = 0; j < 512; j++)
+                disc_block_1[blockNumber * 512 + j] = a[j];
+        }
+    }
+
+    /**
+     * 生成索引表
+     */
+    public void indexList() {
+        ArrayList<Integer> arrayList_2 = new ArrayList<>();
+        arrayList_2 = this.returnFreeIndex();
+        for (int i = 0; i < arrayList_2.size(); i++)
+            indexList.set(i, arrayList_2.get(i));
+    }
+    /**
      * 索引表
      */
-    public byte[] fillInIndex() {
-        byte[] buff = new byte[4];
-        disc_block_3 = this.realBlockAllocate(Transmit.byteToInt(a), a);
-        for (int i = 0; i < disc_block_3.length; i++)
-            if (disc_block_3[i] != 0)
-                for (int j = 0; j < disc_block_3.length; j++)
-                    if (indexBlock[j] == 0)
-                        buff = IndexBlock.intToByteArray(i);
-
-        indexBlock[j] =;
-        return indexBlock;
-    }
+//    public byte[] fillInIndex() {
+//        byte[] buff = new byte[4];
+//        disc_block_3 = this.realBlockAllocate(Transmit.byteToInt(a), a);
+//        for (int i = 0; i < disc_block_3.length; i++)
+//            if (disc_block_3[i] != 0)
+//                for (int j = 0; j < disc_block_3.length; j++)
+//                    if (indexBlock[j] == 0)
+//                        buff = IndexBlock.intToByteArray(i);
+//
+//        indexBlock[j] =;
+//        return indexBlock;
+//    }
 
     /**
      * 计算输入块大小
