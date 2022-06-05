@@ -11,37 +11,45 @@ import java.util.regex.Pattern;
  * @date 2022/5/26 13:36
  */
 public class IndexBlock {
-    //文件名
-    private String fileName;
-    //索引节点
-    private int inode;
 
-
-
-
-
-    public String getFileName() {
-        return fileName;
+    public static byte[] intToByteArray(int i) {
+        byte[] result = new byte[4];
+        result[0] = (byte) ((i >> 24) & 0xFF);
+        result[1] = (byte) ((i >> 16) & 0xFF);
+        result[2] = (byte) ((i >> 8) & 0xFF);
+        result[3] = (byte) (i & 0xFF);
+        return result;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    /**
+     * byte[]转int
+     *
+     * @param bytes 需要转换成int的数组
+     * @return int值
+     */
+    public static int byteArrayToInt(byte[] bytes) {
+        int value = 0;
+        for (int i = 0; i < 4; i++) {
+            int shift = (3 - i) * 8;
+            value += (bytes[i] & 0xFF) << shift;
+        }
+        return value;
     }
 
-    public int getInode() {
-        return inode;
-    }
 
-    public void setInode(int inode) {
-        this.inode = inode;
-    }
 
     //调试用主函数入口
     public static void main(String[] args) {
 //        MainFunction mainFunctions = new MainFunction();
 //        mainFunctions.mainB();
-        InodeBlocks i = new InodeBlocks();
-        i.test();
+//        InodeBlocks i = new InodeBlocks();
+//        i.test();
+        InitDirectory i = new InitDirectory();
+        i.mainSet();
+//        FileAllocation f = new FileAllocation();
+//        f.testA();
+//        f.fillInIndex();
+
 
     }
 
@@ -53,6 +61,8 @@ public class IndexBlock {
  */
 
 class InodeBlocks {
+
+
     //初始化磁盘
     byte[][] blocks = new byte[20000][256];
 
@@ -255,7 +265,9 @@ class InodeBlocks {
     }
 }
 
-
+/**
+ * 文件类，包含目录和文件的抽象类
+ */
 abstract class FileClass{
     public String getName() {
         return name;
@@ -287,26 +299,117 @@ abstract class FileClass{
     private int type;
 }
 
+/**
+ * 数据文件类
+ */
 class FileType extends FileClass{
     FileType(String name,int inode,int type){
         setName(name);
         setInode(inode);
         setType(type);
     }
+
 }
 
+/**
+ * 目录文件类
+ */
 class DirectoryType extends FileClass{
     DirectoryType(String name,int inode,int type){
         setName(name);
         setInode(inode);
         setType(type);
     }
-    private ArrayList<FileClass> subsetFile = new ArrayList<>();
+
+    public void cloneDir(DirectoryType dir){
+        dir.setName(getName());
+        dir.setType(getType());
+        dir.setInode(getInode());
+        dir.setSubsetFile(getSubsetFile());
+    }
+
+    DirectoryType() {
+
+    }
+
+
+    public HashMap<String, FileClass> getSubsetFile() {
+        return subsetFile;
+    }
+
+    public void setSubsetFile(HashMap<String, FileClass> subsetFile) {
+        this.subsetFile = subsetFile;
+    }
+
+    private HashMap<String,FileClass> subsetFile = new HashMap<>();
+
+
+    @Override
+    public String toString() {
+        System.out.println(getName()+"的子目录************");
+        for(HashMap.Entry<String,FileClass> sub : subsetFile.entrySet()) {
+            if(!sub.getKey().equals(".")){
+                if(!sub.getKey().equals(".."))
+                    System.out.println(sub.getKey());
+            }
+        }
+        return "**********************";
+    }
 }
 
-
-class initDirectory{
+/**
+ * 目录初始化
+ */
+class InitDirectory{
     DirectoryType root = new DirectoryType("/",0,0);
+    DirectoryType nowDir = new DirectoryType();
+
+    public static void initDir(DirectoryType parent,DirectoryType self){
+        self.getSubsetFile().put(".",self);
+        self.getSubsetFile().put("..",parent);
+    }
+    public void mainSet(){
+        nowDir =root;
+
+        DirectoryType home = new DirectoryType("home",65,0);
+        DirectoryType lib = new DirectoryType("lib",6,0);
+        DirectoryType program = new DirectoryType("program",621,0);
+        FileClass a = new FileType("a.c",90,1);
+        FileClass b = new FileType("b.txt",90,1);
+
+        this.root.getSubsetFile().put(".",root);
+        this.root.getSubsetFile().put("home",home);
+        this.root.getSubsetFile().put("lib",lib);
+        this.root.getSubsetFile().put("program",program);
+
+        initDir(root,home);
+        initDir(root,lib);
+        initDir(root,program);
+
+        home.getSubsetFile().put("a.c",a);
+        program.getSubsetFile().put("b.txt",b);
+
+        System.out.println(root);
+        System.out.println(home);
+        System.out.println(lib);
+        System.out.println(program);
+
+        writeBlock("hello world!!!",614);
+    }
+    public void writeBlock(String str,int id){
+        int discBlock;
+        byte[] b ;
+        b = str.getBytes();
+        discBlock = id;
+    }
+
+    public void createDir(String name,int inode){
+        DirectoryType directory = new DirectoryType(name,inode,0);
+        initDir(this.nowDir,directory);
+        this.nowDir.getSubsetFile().put(name,  directory);
+        System.out.println(this.nowDir);
+    }
+
 
 }
 

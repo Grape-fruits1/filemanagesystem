@@ -38,6 +38,7 @@ public class Shell {
                 //输入vi指令
                 case "vi" -> {
                     VI vi;
+
                     if ("".equals(param1)) {
                         vi = new VI();
                         byte[] a = vi.start();
@@ -45,7 +46,10 @@ public class Shell {
                         byte[] b = file1.realBlockAllocate(Transmit.byteToInt(a), a);
                         transmit.outPutDisc(b);
                     } else {
+                        System.out.println("hello");
                     }
+
+
                 }
                 case "exit" -> {
                     return;
