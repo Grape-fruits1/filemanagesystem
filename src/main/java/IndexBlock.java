@@ -37,7 +37,6 @@ public class IndexBlock {
     }
 
 
-
     //调试用主函数入口
     public static void main(String[] args) {
 //        MainFunction mainFunctions = new MainFunction();
@@ -240,7 +239,7 @@ class InodeBlocks {
 
             int x = (index - 213632) / 64 + 3585;
             int y = (index - 213632) % 64;
-            int z = (x-3585) /64 +3393;
+            int z = (x - 3585) / 64 + 3393;
 
             y = y * 4;
             buff[0] = this.blocks[x][y];
@@ -268,7 +267,7 @@ class InodeBlocks {
 /**
  * 文件类，包含目录和文件的抽象类
  */
-abstract class FileClass{
+abstract class FileClass {
     public String getName() {
         return name;
     }
@@ -302,8 +301,8 @@ abstract class FileClass{
 /**
  * 数据文件类
  */
-class FileType extends FileClass{
-    FileType(String name,int inode,int type){
+class FileType extends FileClass {
+    FileType(String name, int inode, int type) {
         setName(name);
         setInode(inode);
         setType(type);
@@ -314,14 +313,14 @@ class FileType extends FileClass{
 /**
  * 目录文件类
  */
-class DirectoryType extends FileClass{
-    DirectoryType(String name,int inode,int type){
+class DirectoryType extends FileClass {
+    DirectoryType(String name, int inode, int type) {
         setName(name);
         setInode(inode);
         setType(type);
     }
 
-    public void cloneDir(DirectoryType dir){
+    public void cloneDir(DirectoryType dir) {
         dir.setName(getName());
         dir.setType(getType());
         dir.setInode(getInode());
@@ -341,15 +340,15 @@ class DirectoryType extends FileClass{
         this.subsetFile = subsetFile;
     }
 
-    private HashMap<String,FileClass> subsetFile = new HashMap<>();
+    private HashMap<String, FileClass> subsetFile = new HashMap<>();
 
 
     @Override
     public String toString() {
-        System.out.println(getName()+"的子目录************");
-        for(HashMap.Entry<String,FileClass> sub : subsetFile.entrySet()) {
-            if(!sub.getKey().equals(".")){
-                if(!sub.getKey().equals(".."))
+        System.out.println(getName() + "的子目录************");
+        for (HashMap.Entry<String, FileClass> sub : subsetFile.entrySet()) {
+            if (!sub.getKey().equals(".")) {
+                if (!sub.getKey().equals(".."))
                     System.out.println(sub.getKey());
             }
         }
@@ -360,79 +359,179 @@ class DirectoryType extends FileClass{
 /**
  * 目录初始化
  */
-class InitDirectory{
-    DirectoryType root = new DirectoryType("/",0,0);
+class InitDirectory {
+    DirectoryType root = new DirectoryType("/", 0, 0);
     DirectoryType nowDir = new DirectoryType();
 
-    public static void initDir(DirectoryType parent,DirectoryType self){
-        self.getSubsetFile().put(".",self);
-        self.getSubsetFile().put("..",parent);
+    public static void initDir(DirectoryType parent, DirectoryType self) {
+        self.getSubsetFile().put(".", self);
+        self.getSubsetFile().put("..", parent);
     }
-    public void mainSet(){
-        nowDir =root;
 
-        DirectoryType home = new DirectoryType("home",65,0);
-        DirectoryType lib = new DirectoryType("lib",6,0);
-        DirectoryType program = new DirectoryType("program",621,0);
-        FileClass a = new FileType("a.c",90,1);
-        FileClass b = new FileType("b.txt",90,1);
+    public void mainSet() {
 
-        this.root.getSubsetFile().put(".",root);
-        this.root.getSubsetFile().put("home",home);
-        this.root.getSubsetFile().put("lib",lib);
-        this.root.getSubsetFile().put("program",program);
+        DirectoryType x = new DirectoryType("x", 626, 0);
+        DirectoryType home = new DirectoryType("home", 65, 0);
+        DirectoryType lib = new DirectoryType("lib", 6, 0);
+        DirectoryType program = new DirectoryType("program", 621, 0);
+        FileClass a = new FileType("a.c", 90, 1);
+        FileClass b = new FileType("b.txt", 90, 1);
 
-        initDir(root,home);
-        initDir(root,lib);
-        initDir(root,program);
+        nowDir = root;
+        this.root.getSubsetFile().put(".", root);
+        this.root.getSubsetFile().put("home", home);
+        this.root.getSubsetFile().put("lib", lib);
+        this.root.getSubsetFile().put("program", program);
 
-        home.getSubsetFile().put("a.c",a);
-        program.getSubsetFile().put("b.txt",b);
+        initDir(root, home);
+        initDir(root, lib);
+        initDir(root, program);
+
+        home.getSubsetFile().put("x", x);
+        initDir(home, x);
+        home.getSubsetFile().put("a.c", a);
+        program.getSubsetFile().put("b.txt", b);
 
         System.out.println(root);
         System.out.println(home);
         System.out.println(lib);
         System.out.println(program);
 
-        writeBlock("hello world!!!",614);
+        Scanner input = new Scanner(System.in);
+        String s;
+        String[] inputHandled;
+        String s1;
+        while (true) {
+            s = input.nextLine();
+            inputHandled = s.split(" ");
+            if (inputHandled.length > 1) {
+                s1 = inputHandled[1];
+            } else s1 = "#";
+            switch (inputHandled[0]) {
+                case "rm":
+                    deleteFile(s1);
+                    break;
+                case "create":
+                    createFile(s1);
+                    break;
+                case "vi":
+                    break;
+                case "mkdir":
+                    createDir(s1, 35);
+                    break;
+                case "cd":
+                    switchDir(inputHandled[1]);
+                    break;
+                case "delete":
+                    deleteDir(inputHandled[1]);
+                    break;
+                case "dir":
+                    System.out.println(this.nowDir);
+                    break;
+                default:
+                    System.out.println("指令错误");
+                    break;
+            }
+        }
     }
-    public void writeBlock(String str,int id){
+
+    public void writeBlock(String str, int id) {
         int discBlock;
-        byte[] b ;
+        byte[] b;
         b = str.getBytes();
         discBlock = id;
     }
 
-    public void createDir(String name,int inode){
-        DirectoryType directory = new DirectoryType(name,inode,0);
-        initDir(this.nowDir,directory);
-        this.nowDir.getSubsetFile().put(name,  directory);
+    /**
+     * 创建目录
+     *
+     * @param name  目录名字
+     * @param inode 索引节点
+     */
+    public void createDir(String name, int inode) {
+        DirectoryType directory = new DirectoryType(name, inode, 0);
+        initDir(this.nowDir, directory);
+        this.nowDir.getSubsetFile().put(name, directory);
         System.out.println(this.nowDir);
     }
 
+    /**
+     * 切换路径
+     *
+     * @param name 绝对路径
+     */
+    public void switchDir(String name) {
+        if (name.equals("..")) {
+            this.nowDir = (DirectoryType) this.nowDir.getSubsetFile().get("..");
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+            System.out.println(this.nowDir);
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+
+        } else {
+            String[] hand = name.split("/");
+            this.nowDir = root;
+            for (String s : hand) {
+                for (HashMap.Entry<String, FileClass> sub : this.nowDir.getSubsetFile().entrySet()) {
+                    if (sub.getValue().getName().equals(s)) {
+                        this.nowDir = (DirectoryType) sub.getValue();
+                        break;
+                    }
+                }
+            }
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+            System.out.println(this.nowDir);
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+        }
+    }
+
+    public void deleteDir(String name) {
+        if(this.nowDir.getSubsetFile().get(name).getType()==1){
+            System.out.println("该文件是普通文件,命令使用错误");
+            return;
+        }
+        DirectoryType dir = new DirectoryType("asd", 20, 1);
+        dir = (DirectoryType) this.nowDir.getSubsetFile().get(name);
+
+        int tag = 1;
+        for (HashMap.Entry<String, FileClass> sub : dir.getSubsetFile().entrySet()) {
+            if (!sub.getKey().equals("."))
+                if (!sub.getKey().equals(".."))
+                    if (sub.getValue().getType() == 0) {
+                        System.out.println("不是最低目录不可以删除");
+                        tag = 0;
+                        break;
+                    }
+        }
+        if (tag == 1) {
+            this.nowDir.getSubsetFile().remove(name);
+            System.out.println(this.nowDir);
+
+        }
+    }
+
+    public void createFile(String name){
+        FileType f = new FileType(name,0,1);
+        this.nowDir.getSubsetFile().put(name, f);
+        System.out.println(this.nowDir);
+    }
+
+    public void deleteFile(String name){
+
+        if(this.nowDir.getSubsetFile().get(name).getType()==0){
+            System.out.println("该文件是目录文件,命令使用错误");
+            return;
+        }
+        FileType f = (FileType) this.nowDir.getSubsetFile().get(name);
+
+        this.nowDir.getSubsetFile().remove(name);
+        System.out.println(this.nowDir);
+    }
 
 }
 
 
+/************************************封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印*************************************/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*************************************************************************/
 /**
  * 一个索引块存64个索引指针大小 1536byte
  */

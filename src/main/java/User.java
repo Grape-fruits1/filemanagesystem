@@ -6,9 +6,10 @@
  * @date 2022/6/5 2:41
  */
 public class User {
+    byte uid;
     String userName;
     String password;
-    User () {
+    User (byte uid) {
 
     }
 }

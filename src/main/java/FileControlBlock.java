@@ -1,5 +1,4 @@
-package main;
-
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -31,6 +30,10 @@ public class FileControlBlock {
         private String fileName;
         //索引节点
         private int inode;
+        //物理地址
+        int address;
+        //二进制数据
+        byte[] data = new byte[27];
 
         /**
          * 此构造方法用于第一次创建fcb，不适用于从磁盘读取已有文件
@@ -39,6 +42,32 @@ public class FileControlBlock {
                 creationTime = new Date();
                 this.fileName = fileName;
                 chomd((byte) 0);
+//                FileAllocation fileAllocation = new FileAllocation();
+                data[0] = readability;
+                data[1] = writability;
+                data[2] = enforceability;
+                for (int i = 0; i < 8; i++) {
+                        data[3 + i] = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(creationTime.getTime()).array()[i];
+                }
+                data[20] = (byte) ((inode >> 24) & 0xFF);
+                data[21] = (byte) ((inode >> 16) & 0xFF);
+                data[22] = (byte) ((inode >> 8) & 0xFF);
+                data[23] = (byte) (inode & 0xFF);
+                data[24] = (byte) ((address >> 24) & 0xFF);
+                data[25] = (byte) ((address >> 16) & 0xFF);
+                data[26] = (byte) ((address >> 8) & 0xFF);
+                data[27] = (byte) (address & 0xFF);
+                data[28] = owner.uid;
+//                fileAllocation.realBlockAllocate(28, data);
+        }
+
+        /**
+         * 此构造方法用于从磁盘读取已有文件
+         * @param num 物理块号
+         */
+        public FileControlBlock(int num) {
+
+//                creationTime = new Date()
         }
         /**
          * 修改权限方法
