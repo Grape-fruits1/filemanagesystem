@@ -1,4 +1,3 @@
-package main.java;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,14 +11,28 @@ import java.util.Collections;
 
 public class FileAllocation {
     VI vi = new VI();
-    byte[] a = vi.start();
+    //byte[] a = vi.start();
+    byte[] a = new byte[9];
+    byte[] buff= new byte[5];
+    public void testA(){
+        a[3] = 5;
+        buff = "hello".getBytes();
+        a[4] = buff[0];
+        a[5] = buff[1];
+        a[6] = buff[2];
+        a[7] = buff[3];
+        a[8] = buff[4];
+        for (byte b:a){
+            System.out.println(b);
+        }
+    }
     int size = Transmit.byteToInt(a);
     // arraylist_1为逻辑块数组、disc_block为物理块字节数组（二维）
     ArrayList<Integer> arraylist_1 = new ArrayList<Integer>(Collections.nCopies(10, 0));
     static byte[][] disc_block = new byte[512][1000000];
     byte[] disc_block_1 = new byte[512000000];
-    byte[] disc_block_2 = new byte[0];
-    byte[] disc_block_3 = new byte[0];
+    byte[] disc_block_2 = new byte[512000000];
+    byte[] disc_block_3 = new byte[512000000];
     byte[] indexBlock = new byte[512];
 //    // 以下数组为arraylist_2的构成数组
 //    ArrayList<Byte> arraylist_2_1 = new ArrayList<Byte>();
@@ -32,13 +45,14 @@ public class FileAllocation {
     public byte[] fillInIndex() {
         byte[] buff = new byte[4];
         disc_block_3 = this.realBlockAllocate(Transmit.byteToInt(a), a);
-        for (int i = 0; i < disc_block_3.length; i++)
-            if (disc_block_3[i] != 0)
-                for (int j = 0; j < disc_block_3.length; j++)
-                    if (indexBlock[j] == 0)
-                        buff = IndexBlock.intToByteArray(i);
 
-        indexBlock[j] =;
+        System.out.println(disc_block_3[4]);
+//        for (int i = 0; i < disc_block_3.length; i++)
+//            if (disc_block_3[i] != 0)
+//                for (int j = 0; j < disc_block_3.length; j++)
+//                    if (indexBlock[j] == 0)
+//                        buff = IndexBlock.intToByteArray(i);
+
         return indexBlock;
     }
 
@@ -85,9 +99,9 @@ public class FileAllocation {
      */
     public byte[] realBlockAllocate(int size, byte[] a) {
         for (int i = 0; i < 1000000; i++)
-            if (disc_block[i][0] == 0) {
+            if (disc_block[0][i] == 0) {
                 for (int j = 0; j < size; j++)
-                    disc_block[i][0] = a[j];
+                    disc_block[0][i] = a[j];
             }
         int index = 0;
 //        System.out.println("index list:" + arraylist_1);
