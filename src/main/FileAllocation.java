@@ -22,9 +22,9 @@ public class FileAllocation {
     byte[] disc_block_3 = new byte[0];
     byte[] indexBlock = new byte[512];
     // 空闲块号数组
-    int[] freeIndex = new int[50000];
+    int[] freeIndex = new int[1000000];
     // 索引表
-    int[] indexList = new int[50000];
+    int[] indexList = new int[1000000];
 //    // 以下数组为arraylist_2的构成数组
 //    ArrayList<Byte> arraylist_2_1 = new ArrayList<Byte>();
 //    ArrayList<Byte> arraylist_2_2 = new ArrayList<Byte>();
