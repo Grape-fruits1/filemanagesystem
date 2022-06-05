@@ -11,18 +11,36 @@ import java.util.Collections;
  **/
 
 public class FileAllocation {
-
     VI vi = new VI();
     byte[] a = vi.start();
     int size = Transmit.byteToInt(a);
     // arraylist_1为逻辑块数组、disc_block为物理块字节数组（二维）
     ArrayList<Integer> arraylist_1 = new ArrayList<Integer>(Collections.nCopies(10, 0));
     static byte[][] disc_block = new byte[512][1000000];
+    byte[] disc_block_1 = new byte[512000000];
+    byte[] disc_block_2 = new byte[0];
+    byte[] disc_block_3 = new byte[0];
+    byte[] indexBlock = new byte[512];
 //    // 以下数组为arraylist_2的构成数组
 //    ArrayList<Byte> arraylist_2_1 = new ArrayList<Byte>();
 //    ArrayList<Byte> arraylist_2_2 = new ArrayList<Byte>();
 //    ArrayList<Byte> arraylist_2_3 = new ArrayList<Byte>();
 
+    /**
+     * 索引表
+     */
+    public byte[] fillInIndex() {
+        byte[] buff = new byte[4];
+        disc_block_3 = this.realBlockAllocate(Transmit.byteToInt(a), a);
+        for (int i = 0; i < disc_block_3.length; i++)
+            if (disc_block_3[i] != 0)
+                for (int j = 0; j < disc_block_3.length; j++)
+                    if (indexBlock[j] == 0)
+                        buff = IndexBlock.intToByteArray(i);
+
+        indexBlock[j] =;
+        return indexBlock;
+    }
 
     /**
      * 计算输入块大小
@@ -54,9 +72,11 @@ public class FileAllocation {
      * 为输入至内存提供物理块
      */
     public byte[][] forUse(int size, byte[] a) {
-        for (int i = 0; i < size; i++) {
-            disc_block[i][0] = a[i];
-        }
+        for (int i = 0; i < 1000000; i++)
+            if (disc_block[i][0] == 0) {
+                for (int j = 0; j < size; j++)
+                    disc_block[i][0] = a[j];
+            }
         return disc_block;
     }
 
@@ -64,8 +84,6 @@ public class FileAllocation {
      * 物理块的分配、以及与逻辑块的映射
      */
     public byte[] realBlockAllocate(int size, byte[] a) {
-        byte[] disc_block_1 = new byte[512000000];
-        byte[] disc_block_2 = new byte[0];
         for (int i = 0; i < 1000000; i++)
             if (disc_block[i][0] == 0) {
                 for (int j = 0; j < size; j++)
