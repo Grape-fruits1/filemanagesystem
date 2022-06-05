@@ -15,8 +15,8 @@ public class Shell {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        FileAllocation file1 = new FileAllocation();
-        Transmit transmit = new Transmit();
+//        FileAllocation file1 = new FileAllocation();
+//        Transmit transmit = new Transmit();
         while (true) {
             Scanner scan = new Scanner(System.in);
             String input = scan.nextLine();
@@ -43,8 +43,8 @@ public class Shell {
                         vi = new VI();
                         byte[] a = vi.start();
                         // 转化后的一维byte数组
-                        byte[] b = file1.realBlockAllocate(Transmit.byteToInt(a), a);
-                        transmit.outPutDisc(b);
+//                        byte[] b = file1.realBlockAllocate(Transmit.byteToInt(a), a);
+//                        transmit.outPutDisc(b);
                     } else {
                         System.out.println("hello");
                     }
