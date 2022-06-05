@@ -1,3 +1,5 @@
+package main.java;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -62,7 +64,8 @@ public class FileAllocation {
      * 物理块的分配、以及与逻辑块的映射
      */
     public byte[] realBlockAllocate(int size, byte[] a) {
-        byte[] disc_block_1 = new byte[0];
+        byte[] disc_block_1 = new byte[512000000];
+        byte[] disc_block_2 = new byte[0];
         for (int i = 0; i < 1000000; i++)
             if (disc_block[i][0] == 0) {
                 for (int j = 0; j < size; j++)
@@ -75,7 +78,10 @@ public class FileAllocation {
                 disc_block_1[index++] = aByte;
             }
         }
-        return disc_block_1;
+        for (int i = 0; i < disc_block_1.length; i++)
+            if (disc_block_1[i] != 0)
+                disc_block_2[i] = disc_block_1[i];
+        return disc_block_2;
     }
 
     public int returnIndex(int size, byte[] a) {
