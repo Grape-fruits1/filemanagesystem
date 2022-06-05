@@ -370,14 +370,14 @@ class InitDirectory {
 
     public void mainSet() {
 
-
+        DirectoryType x = new DirectoryType("x", 626, 0);
         DirectoryType home = new DirectoryType("home", 65, 0);
         DirectoryType lib = new DirectoryType("lib", 6, 0);
         DirectoryType program = new DirectoryType("program", 621, 0);
         FileClass a = new FileType("a.c", 90, 1);
         FileClass b = new FileType("b.txt", 90, 1);
 
-        nowDir = home;
+        nowDir = root;
         this.root.getSubsetFile().put(".", root);
         this.root.getSubsetFile().put("home", home);
         this.root.getSubsetFile().put("lib", lib);
@@ -387,6 +387,8 @@ class InitDirectory {
         initDir(root, lib);
         initDir(root, program);
 
+        home.getSubsetFile().put("x", x);
+        initDir(home, x);
         home.getSubsetFile().put("a.c", a);
         program.getSubsetFile().put("b.txt", b);
 
@@ -396,11 +398,22 @@ class InitDirectory {
         System.out.println(program);
 
         Scanner input = new Scanner(System.in);
+        String s;
+        String[] inputHandled;
+        String s1;
         while (true) {
-            String s = input.nextLine();
-            String[] inputHandled = s.split(" ");
-            String s1 = inputHandled[1];
+            s = input.nextLine();
+            inputHandled = s.split(" ");
+            if (inputHandled.length > 1) {
+                s1 = inputHandled[1];
+            } else s1 = "#";
             switch (inputHandled[0]) {
+                case "rm":
+                    deleteFile(s1);
+                    break;
+                case "create":
+                    createFile(s1);
+                    break;
                 case "vi":
                     break;
                 case "mkdir":
@@ -409,9 +422,15 @@ class InitDirectory {
                 case "cd":
                     switchDir(inputHandled[1]);
                     break;
+                case "delete":
+                    deleteDir(inputHandled[1]);
+                    break;
+                case "dir":
+                    System.out.println(this.nowDir);
+                    break;
                 default:
                     System.out.println("指令错误");
-
+                    break;
             }
         }
     }
@@ -423,6 +442,12 @@ class InitDirectory {
         discBlock = id;
     }
 
+    /**
+     * 创建目录
+     *
+     * @param name  目录名字
+     * @param inode 索引节点
+     */
     public void createDir(String name, int inode) {
         DirectoryType directory = new DirectoryType(name, inode, 0);
         initDir(this.nowDir, directory);
@@ -430,13 +455,22 @@ class InitDirectory {
         System.out.println(this.nowDir);
     }
 
+    /**
+     * 切换路径
+     *
+     * @param name 绝对路径
+     */
     public void switchDir(String name) {
-        if (name.equals(".."))
+        if (name.equals("..")) {
             this.nowDir = (DirectoryType) this.nowDir.getSubsetFile().get("..");
-        else {
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+            System.out.println(this.nowDir);
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+
+        } else {
             String[] hand = name.split("/");
             this.nowDir = root;
-            for (String s:hand) {
+            for (String s : hand) {
                 for (HashMap.Entry<String, FileClass> sub : this.nowDir.getSubsetFile().entrySet()) {
                     if (sub.getValue().getName().equals(s)) {
                         this.nowDir = (DirectoryType) sub.getValue();
@@ -444,16 +478,59 @@ class InitDirectory {
                     }
                 }
             }
-            System.out.println("当前目录" + this.nowDir);
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+            System.out.println(this.nowDir);
+            System.out.println("--------------当前目录:" + this.nowDir.getName() + "--------------");
+        }
+    }
 
+    public void deleteDir(String name) {
+        if(this.nowDir.getSubsetFile().get(name).getType()==1){
+            System.out.println("该文件是普通文件,命令使用错误");
+            return;
+        }
+        DirectoryType dir = new DirectoryType("asd", 20, 1);
+        dir = (DirectoryType) this.nowDir.getSubsetFile().get(name);
+
+        int tag = 1;
+        for (HashMap.Entry<String, FileClass> sub : dir.getSubsetFile().entrySet()) {
+            if (!sub.getKey().equals("."))
+                if (!sub.getKey().equals(".."))
+                    if (sub.getValue().getType() == 0) {
+                        System.out.println("不是最低目录不可以删除");
+                        tag = 0;
+                        break;
+                    }
+        }
+        if (tag == 1) {
+            this.nowDir.getSubsetFile().remove(name);
+            System.out.println(this.nowDir);
 
         }
+    }
+
+    public void createFile(String name){
+        FileType f = new FileType(name,0,1);
+        this.nowDir.getSubsetFile().put(name, f);
+        System.out.println(this.nowDir);
+    }
+
+    public void deleteFile(String name){
+
+        if(this.nowDir.getSubsetFile().get(name).getType()==0){
+            System.out.println("该文件是目录文件,命令使用错误");
+            return;
+        }
+        FileType f = (FileType) this.nowDir.getSubsetFile().get(name);
+
+        this.nowDir.getSubsetFile().remove(name);
+        System.out.println(this.nowDir);
     }
 
 }
 
 
-/*************************************************************************/
+/************************************封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印封印*************************************/
 
 /**
  * 一个索引块存64个索引指针大小 1536byte
