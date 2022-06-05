@@ -22,9 +22,9 @@ public class FileAllocation {
     byte[] disc_block_3 = new byte[0];
     byte[] indexBlock = new byte[512];
     // 空闲块号数组
-    ArrayList<Integer> freeIndex = new ArrayList<>();
+    int[] freeIndex = new int[50000];
     // 索引表
-    ArrayList<Integer> indexList = new ArrayList<>();
+    int[] indexList = new int[50000];
 //    // 以下数组为arraylist_2的构成数组
 //    ArrayList<Byte> arraylist_2_1 = new ArrayList<Byte>();
 //    ArrayList<Byte> arraylist_2_2 = new ArrayList<Byte>();
@@ -41,11 +41,14 @@ public class FileAllocation {
     /**
      * 返回可用空闲块号数组
      */
-    public ArrayList<Integer> returnFreeIndex() {
+    public int[] returnFreeIndex(int size) {
+        int flag = 0;
         for (int i = 0; i < 1000000; i++) {
             if (disc_block_1[i * 512] == 0) {
-                for (int j = 0; j < freeIndex.size(); j++)
-                    freeIndex.set(j, i);
+                freeIndex[flag] = i;
+                flag++;
+                if (flag == size)
+                    break;
             }
         }
         return freeIndex;
@@ -55,10 +58,9 @@ public class FileAllocation {
      * 用空闲块号数组来写入指定物理块
      */
     public void writeData(byte[] a) {
-        ArrayList<Integer> arrayList = new ArrayList<>();
-        arrayList = this.returnFreeIndex();
-        for (int i = 0; i < arrayList.size(); i++) {
-            int blockNumber = arrayList.get(i) - 1;
+        int[] b = this.returnFreeIndex(size);
+        for (int i = 0; i < b.length; i++) {
+            int blockNumber = b[i] - 1;
             for (int j = 0; j < 512; j++)
                 disc_block_1[blockNumber * 512 + j] = a[j];
         }
@@ -68,10 +70,9 @@ public class FileAllocation {
      * 生成索引表
      */
     public void indexList() {
-        ArrayList<Integer> arrayList_2 = new ArrayList<>();
-        arrayList_2 = this.returnFreeIndex();
-        for (int i = 0; i < arrayList_2.size(); i++)
-            indexList.set(i, arrayList_2.get(i));
+        int[] array2 = this.returnFreeIndex(size);
+        for (int i = 0; i < array2.length; i++)
+            indexList[i] = array2[i];
     }
     /**
      * 索引表
