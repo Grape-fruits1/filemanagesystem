@@ -4,11 +4,11 @@ import java.util.*;
 /**
  * @author Lodisaq
  * @version 1.0
- * @className FileControlBlock
- * @description 文件控制块
+ * @className IndexBlock
+ * @description 索引块
  * @date 2022/5/26 13:36
  */
-public class FileControlBlock {
+public class IndexBlock {
     //文件名
     private String fileName;
     //索引节点
@@ -250,6 +250,80 @@ class InodeBlocks {
 }
 
 
+abstract class FileClass{
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getInode() {
+        return inode;
+    }
+
+    public void setInode(int inode) {
+        this.inode = inode;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    private String name;
+    private int inode;
+    // 0表示目录文件 1表示数据文件
+    private int type;
+}
+
+class FileType extends FileClass{
+    FileType(String name,int inode,int type){
+        setName(name);
+        setInode(inode);
+        setType(type);
+    }
+}
+
+class DirectoryType extends FileClass{
+    DirectoryType(String name,int inode,int type){
+        setName(name);
+        setInode(inode);
+        setType(type);
+    }
+    private ArrayList<FileClass> subsetFile = new ArrayList<>();
+}
+
+
+class initDirectory{
+    DirectoryType root = new DirectoryType("/",0,0);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************************************************/
 /**
  * 一个索引块存64个索引指针大小 1536byte
  */
