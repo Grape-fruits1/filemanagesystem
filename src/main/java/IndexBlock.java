@@ -369,6 +369,125 @@ class InitDirectory {
     }
 
     public void mainSet() {
+        Scanner input = new Scanner(System.in);
+        ArrayList<User> log = new ArrayList<>();
+        String pass = new String();
+        String nameU;
+        int flag = 1;
+        for (int i = 1; i < 9; i++) {
+            pass = String.valueOf(i);
+            nameU = "user".concat(pass);
+            User u = new User(nameU, pass, (byte) i);
+            log.add(u);
+        }
+        //登录系统
+        while (flag == 1) {
+            System.out.println("please input name");
+            String u = input.nextLine();
+            System.out.println("please input password");
+            String p = input.nextLine();
+            for (User u1 : log) {
+                if (u1.getUserName().equals(u))
+                    if (u1.getPassword().equals(p))
+                        flag = 0;
+
+            }
+            if (flag == 1)
+                System.out.println("match error");
+        }
+
+        System.out.println("welcome");
+        FileAllocation fa = new FileAllocation();
+        InodeBlocks iBlock = new InodeBlocks();
+        FileControlBlock fB = new FileControlBlock();
+
+        //给root的FCB分配地址
+        root.setInode(fa.returnFreeIndex(1)[0]);
+        byte[]  tag= new byte[512];
+        tag = fB.cFileControlBlock();
+        //向FCB的地址中写入信息
+        fa.writeControlBlockMessage(root.getInode(),tag);
+        fB.setInode(fa.returnFreeIndex(1)[0]);
+        //给FCB中索引表分配了地址
+        fa.writeControlBlockMessage(root.getInode(),tag);
+        Arrays.fill(tag, (byte) 0);
+        tag[0] = 1;
+
+        fa.writeControlBlockMessage(fB.getInode(),tag);
+
+        byte[] storage = new byte[512];
+        for(int i =0;i<512;i++){
+            byte[] tb = new byte[16];
+            tb = writeBlock("home",fa.returnFreeIndex(1)[0]);
+            Arrays.fill(tag, (byte) 0);
+            tag[0] = 1;
+            fa.writeControlBlockMessage(fa.returnFreeIndex(1)[0],tag);
+            for(int j =0;j<16;j++){
+                storage[i] = tb[j];
+                i++;
+            }
+
+            tb = writeBlock("lib",fa.returnFreeIndex(1)[0]);
+            Arrays.fill(tag, (byte) 0);
+            tag[0] = 1;
+            fa.writeControlBlockMessage(fa.returnFreeIndex(1)[0],tag);
+            for(int j =0;j<16;j++){
+                storage[i] = tb[j];
+                i++;
+            }
+
+
+            tb = writeBlock("program",fa.returnFreeIndex(1)[0]);
+            Arrays.fill(tag, (byte) 0);
+            tag[0] = 1;
+            fa.writeControlBlockMessage(fa.returnFreeIndex(1)[0],tag);
+            for(int j =0;j<16;j++){
+                storage[i] = tb[j];
+                i++;
+            }
+
+            fa.writeControlBlockMessage(fB.getInode(),storage);
+            break;
+        }
+
+        storage=fa.readControlBlockMessage(fB.getInode());
+
+        for(int i = 0;i<512;i++){
+            String s = new String(String.valueOf((storage[i])));
+            System.out.println(s);
+        }
+//        byte[] nameByte = new byte[12];
+//        int i=0;
+//        int j=0;
+//        int fl=0;
+//        for(;i<512;i++){
+//            if(storage[i]!=0 ){
+//                nameByte[j] = storage[i];
+//                fl++;
+//                j++;
+//            }else {
+//                if(fl !=0){
+//                    if(nameByte.length>1) {
+//                        System.out.println(new String(nameByte));
+//                        fl = 0;
+//                        j = 0;
+//                    }
+//                }
+//            }
+////            nameByte[j] = storage[i];
+////            if(storage[i]==0) {
+////                if (nameByte.length > 1) {
+////                    System.out.println(new String(nameByte));
+////                }else {
+////                    System.out.println(nameByte[0]);
+////                }
+////                Arrays.fill(nameByte, (byte) 0);
+////                j=0;
+////                continue;
+////            }
+////            j++;
+//        }
+
 
         DirectoryType x = new DirectoryType("x", 626, 0);
         DirectoryType home = new DirectoryType("home", 65, 0);
@@ -397,7 +516,7 @@ class InitDirectory {
         System.out.println(lib);
         System.out.println(program);
 
-        Scanner input = new Scanner(System.in);
+
         String s;
         String[] inputHandled;
         String s1;
@@ -435,11 +554,48 @@ class InitDirectory {
         }
     }
 
-    public void writeBlock(String str, int id) {
+
+    public byte[] writeBlock(String str, int id) {
         int discBlock;
-        byte[] b;
-        b = str.getBytes();
-        discBlock = id;
+        byte[] bName = new byte[12];
+        bName = str.getBytes();
+        byte[] bId = new byte[4];
+        bId = IndexBlock.intToByteArray(id);
+        byte[] oneItem = new byte[16];
+        for (int i =0;i<16;i++){
+            for (int j =0;j<12;j++){
+                oneItem[i] = bName[j];
+                i++;
+                if(bName.length <=i){
+                    i = 12;
+                    break;
+                }
+            }
+            for (int j =0;j<4;j++){
+                oneItem[i] = bId[j];
+                i++;
+            }
+        }
+
+        byte[] bName1 = new byte[12];
+        byte[] bId1 =new byte[4];
+        for(int i=0;i<16;i++){
+            for (int j =0;j<12;j++){
+                bName1[j] = oneItem[i];
+                i++;
+                if(oneItem[i] ==0)
+                    break;
+            }
+            i = 12;
+            for (int j =0;j<4;j++){
+                 bId1[j]=oneItem[i] ;
+                i++;
+            }
+            i--;
+        }
+        System.out.println(new String(bName1));
+        System.out.println("******写入调试******");
+        return oneItem;
     }
 
     /**
@@ -485,7 +641,7 @@ class InitDirectory {
     }
 
     public void deleteDir(String name) {
-        if(this.nowDir.getSubsetFile().get(name).getType()==1){
+        if (this.nowDir.getSubsetFile().get(name).getType() == 1) {
             System.out.println("该文件是普通文件,命令使用错误");
             return;
         }
@@ -509,15 +665,15 @@ class InitDirectory {
         }
     }
 
-    public void createFile(String name){
-        FileType f = new FileType(name,0,1);
+    public void createFile(String name) {
+        FileType f = new FileType(name, 0, 1);
         this.nowDir.getSubsetFile().put(name, f);
         System.out.println(this.nowDir);
     }
 
-    public void deleteFile(String name){
+    public void deleteFile(String name) {
 
-        if(this.nowDir.getSubsetFile().get(name).getType()==0){
+        if (this.nowDir.getSubsetFile().get(name).getType() == 0) {
             System.out.println("该文件是目录文件,命令使用错误");
             return;
         }

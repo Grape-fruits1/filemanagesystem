@@ -24,7 +24,7 @@ public class FileControlBlock {
         //最后修改时间
         Date modifiedTime;
         //文件所有者
-        User owner;
+        User owner =new User();
 
         //文件名
         private String fileName;
@@ -33,15 +33,14 @@ public class FileControlBlock {
         //物理地址
         int address;
         //二进制数据
-        byte[] data = new byte[27];
+        byte[] data = new byte[512];
 
         /**
          * 此构造方法用于第一次创建fcb，不适用于从磁盘读取已有文件
          */
-        public FileControlBlock(String fileName) {
+        public byte[] cFileControlBlock() {
                 creationTime = new Date();
-                this.fileName = fileName;
-                chomd((byte) 0);
+                chomd((byte) 7);
 //                FileAllocation fileAllocation = new FileAllocation();
                 data[0] = readability;
                 data[1] = writability;
@@ -58,6 +57,7 @@ public class FileControlBlock {
                 data[26] = (byte) ((address >> 8) & 0xFF);
                 data[27] = (byte) (address & 0xFF);
                 data[28] = owner.uid;
+                return data;
 //                fileAllocation.realBlockAllocate(28, data);
         }
 
@@ -68,6 +68,9 @@ public class FileControlBlock {
         public FileControlBlock(int num) {
 
 //                creationTime = new Date()
+        }
+        FileControlBlock(){
+
         }
         /**
          * 修改权限方法
@@ -196,5 +199,13 @@ public class FileControlBlock {
         public String getCreationTime() {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                 return formatter.format(creationTime);
+        }
+
+        public int getInode() {
+                return inode;
+        }
+
+        public void setInode(int inode) {
+                this.inode = inode;
         }
 }

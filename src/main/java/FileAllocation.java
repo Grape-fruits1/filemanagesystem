@@ -10,7 +10,7 @@ import java.util.Collections;
 
 public class FileAllocation {
     VI vi = new VI();
-    byte[] a = vi.start();
+    byte[] a = "hello".getBytes();
     int size = Transmit.byteToInt(a);
     // arraylist_1为逻辑块数组、disc_block为物理块字节数组（二维）
     ArrayList<Integer> arraylist_1 = new ArrayList<Integer>(Collections.nCopies(10, 0));
@@ -32,9 +32,27 @@ public class FileAllocation {
      * 将控制块信息写入磁盘
      */
     public void writeControlBlockMessage(int blockId, byte[] a) {
-        for (int i = 0; i < 512; i++)
+        for (int i = 0; i < 512; i++) {
             disc_block_1[i + blockId * 512] = a[i];
+        }
+
     }
+
+
+    /**
+     * 将控制块信息写入磁盘
+     *
+     * @return
+     */
+    public byte[] readControlBlockMessage(int blockId) {
+        byte[] a = new byte[512];
+        for (int i = 0; i < 512; i++) {
+             a[i]=disc_block_1[i + blockId * 512] ;
+        }
+        return a;
+    }
+
+
 
     /**
      * 返回可用空闲块号数组
@@ -50,6 +68,19 @@ public class FileAllocation {
             }
         }
         return freeIndex;
+    }
+
+    public static void main(String[] args){
+        FileAllocation f = new FileAllocation();
+        int fl = 0;
+        int size = 0;
+        size = 3;
+        for(int i :f.returnFreeIndex(size)){
+            System.out.println(i);
+            fl++;
+            if(fl >= size )
+                break;
+        }
     }
 
     /**
